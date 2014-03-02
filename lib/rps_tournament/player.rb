@@ -22,8 +22,4 @@ class RpsTournament::Player
 
   def result(my_choice, opponent_choice, result)
   end
-
-  def to_s
-    self.class.to_s
-  end
 end
