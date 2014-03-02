@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+$:.unshift File.expand_path('../../lib', __FILE__)
+require "rps_tournament"
+
+runner = RpsTournament::Runner.new(ARGV)
+runner.run
