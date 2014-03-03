@@ -5,6 +5,8 @@ class RpsTournament::Game
 
   def initialize(player1, player2)
     @player1, @player2 = player1, player2
+    @player1_score, @player2_score = 0.0,0.0
+    @rounds_played = 0
   end
 
   def play
@@ -15,8 +17,9 @@ class RpsTournament::Game
 
     if choice1 == choice2
       @player1.result choice1, choice2, :draw
+      @player1_score += 0.5
       @player2.result choice2, choice1, :draw
-      nil
+      @player2_score += 0.5
     else
       winner = case choice1
       when :rock
@@ -43,11 +46,21 @@ class RpsTournament::Game
       end
       if winner == @player1
         win @player1, choice1, @player2, choice2
+        @player1_score += 1.0
       else
         win @player2, choice2, @player1, choice1
+        @player2_score += 1.0
       end
-      winner
     end
+    @rounds_played += 1
+  end
+
+  def player1_average
+    @player1_score / @rounds_played
+  end
+
+  def player2_average
+    @player2_score / @rounds_played
   end
 
   private
