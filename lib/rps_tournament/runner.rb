@@ -1,13 +1,21 @@
 class RpsTournament::Runner
   def initialize(args)
-    @my_player = args.pop
-    @iterations = 1000
-  end
-
-  def run
     Dir.glob(File.join(File.expand_path('../../../players', __FILE__), "*")) do |path|
       load path
     end
+    args[0,2].each do |arg|
+      if arg =~ /^\d+$/
+        @iterations = arg.to_i
+      elsif arg =~ /^[A-Z]\w+Player/ && Object.const_defined?(arg)
+        @my_player = Object.const_get(arg)
+      end
+    end
+    @iterations ||= 1000
+  end
+
+  def run
+    log "Tournament with #{@iterations} iterations"
+    log_line
     results = Hash.new {|h,k| h[k] = {}}
     RpsTournament::Player.each_pair do |player1_class, player2_class|
       player1, player2 = player1_class.new, player2_class.new
@@ -23,22 +31,30 @@ class RpsTournament::Runner
       end
     end
     scores.to_a.sort_by {|player,total_score| -total_score}.each do |player,total_score|
-      puts [player, as_percentage(total_score)].join(" - ")
+      log [player, as_percentage(total_score)].join(" - ")
     end
     if @my_player
-      puts "-" * 20
-      puts "Results for #{@my_player}"
-      if Object.const_defined?(@my_player) && (my_results = results[Object.const_get(@my_player)])
+      log_line
+      log "Results for #{@my_player}"
+      if my_results = results[@my_player]
         my_results.each_pair do |opponent, score|
-          puts " vs #{opponent}: #{as_percentage(score)}"
+          log " vs #{opponent}: #{as_percentage(score)}"
         end
       else
-        puts "Could not find player"
+        log "Could not find player"
       end
     end
   end
 
   def as_percentage(score)
     (score*100).round(2)
+  end
+
+  def log(s)
+    puts s
+  end
+
+  def log_line
+    log "-" * 35
   end
 end
