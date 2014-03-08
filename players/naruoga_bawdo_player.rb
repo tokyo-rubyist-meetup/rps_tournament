@@ -19,4 +19,15 @@ class NaruogaBawdoPlayer < RpsTournament::Player
   def result(my_choice, opponent_choice, result)
     @@results << [my_choice, opponent_choice, result]
   end
+
+  private
+
+  def detect_sequence_player
+    if @@results.length > 6 &&
+      @results[-6,6] == [:paper, :rock, :scissors, :paper, :rock, :scissors]
+    else
+      false
+    end
+  end
+
 end
